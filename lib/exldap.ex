@@ -14,8 +14,12 @@ defmodule Exldap do
   def connect(timeout \\ 3000) do
     want =  Application.get_env(:exldap, :settings) 
               |> Keyword.take([:server, :port, :ssl, :user_dn, :password])
+              |> List.keysort(0)
+    connect_sorted(want, timeout)
+  end
 
-    connect(want, timeout)
+  defp connect_sorted([password: password, port: port, server: server, ssl: true, user_dn: user_dn, ], timeout) do
+       connect([server: server, port: port, ssl: true, user_dn: user_dn, password: password], timeout)
   end
 
   def connect([server: server, port: port, ssl: true, user_dn: user_dn, password: password], timeout) do
